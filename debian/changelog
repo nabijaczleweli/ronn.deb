@@ -1,0 +1,5 @@
+ruby-ronn (0.7.3-1) UNRELEASED; urgency=low
+
+  * Initial release (Closes: #nnnn)
+
+ -- Martin Ueding <dev@martin-ueding.de>  Wed, 05 Oct 2011 23:01:51 +0200
