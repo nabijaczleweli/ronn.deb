@@ -1,3 +1,2 @@
-# FIXME: man/ dir found in source. Consider installing manpages
-# man/ronn-format.7
-# man/ronn.1
+man/ronn-format.7
+man/ronn.1

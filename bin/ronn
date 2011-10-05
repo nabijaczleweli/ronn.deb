@@ -43,25 +43,9 @@ end
 ##
 # Libraries and LOAD_PATH shenanigans
 
-begin
-  require 'rdiscount'
-  require 'hpricot'
-  require 'ronn'
-rescue LoadError => boom
-  if boom.to_s =~ /ronn/
-    libdir = File.expand_path("../../lib", __FILE__).sub(%r|^#{Dir.pwd}/|, './')
-    if File.directory?(libdir) && !$:.include?(libdir)
-      warn "warn: #{boom}. adding #{libdir} to RUBYLIB ..."
-      $:.unshift libdir
-      retry
-    end
-  elsif !defined?(Gem)
-    warn "warn: #{boom}. loading rubygems ..."
-    require 'rubygems'
-    retry
-  end
-  abort boom.to_s
-end
+require 'rdiscount'
+require 'hpricot'
+require 'ronn'
 
 ##
 # Argument defaults
