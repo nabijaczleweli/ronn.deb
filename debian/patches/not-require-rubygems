@@ -1,12 +1,6 @@
 Description: Do not require rubygems
  Since this is not deployed as a ruby gem any more, requiring rubygems does not
  make sense.
- .
- ruby-ronn (0.7.3-1) unstable; urgency=low
- .
-   * Initial release (Closes: #643672)
-Author: Martin Ueding <dev@martin-ueding.de>
-Bug-Debian: http://bugs.debian.org/643672
 
 ---
 
