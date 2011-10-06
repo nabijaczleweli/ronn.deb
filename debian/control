@@ -3,7 +3,7 @@ Section: ruby
 Priority: optional
 Maintainer: Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>
 Uploaders: Martin Ueding <dev@martin-ueding.de>
-Build-Depends: debhelper (>= 7.0.50~), gem2deb (>= 0.2.10~), ruby-contest, ruby-test-unit
+Build-Depends: debhelper (>= 7.0.50~), gem2deb (>= 0.2.10~), ruby-contest
 Standards-Version: 3.9.2
 Homepage: http://rtomayko.github.com/ronn
 XS-Ruby-Versions: all
