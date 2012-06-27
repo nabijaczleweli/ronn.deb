@@ -1,3 +1,11 @@
+ruby-ronn (0.7.3-2) unstable; urgency=low
+
+  * Team upload.
+  * Disable tests relying on ordered hashes (Closes: #674380)
+  * Build against gem2deb >=0.3.0~
+
+ -- Cédric Boutillier <cedric.boutillier@gmail.com>  Thu, 28 Jun 2012 00:52:20 +0200
+
 ruby-ronn (0.7.3-1) unstable; urgency=low
 
   * Initial release (Closes: #643672)
