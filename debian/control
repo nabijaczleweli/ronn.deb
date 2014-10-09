@@ -6,6 +6,8 @@ Uploaders: Martin Ueding <dev@martin-ueding.de>
 Build-Depends: debhelper (>= 7.0.50~), gem2deb (>= 0.3.0~), ruby-contest, ruby-hpricot (>= 0.8.2), ruby-rdiscount (>= 1.5.8), ruby-mustache (>= 0.7.0), ruby-json
 Standards-Version: 3.9.3
 Homepage: http://rtomayko.github.com/ronn
+Vcs-Git: git://anonscm.debian.org/pkg-ruby-extras/ruby-ronn.git
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=pkg-ruby-extras/ruby-ronn.git;a=summary
 XS-Ruby-Versions: all
 
 Package: ruby-ronn
