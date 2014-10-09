@@ -1,3 +1,15 @@
+ruby-ronn (0.7.3-3) unstable; urgency=low
+
+  * Team upload.
+  * d/control:
+    - added Vcs headers
+    - bumped up standards version to 3.9.6 (no changes needed)
+    - wrap sort
+    - added Testsuite headers
+  * d/copyright: removed newline
+
+ -- Jonas Genannt <jonas.genannt@capi2name.de>  Thu, 09 Oct 2014 13:33:40 +0200
+
 ruby-ronn (0.7.3-2) unstable; urgency=low
 
   * Team upload.
