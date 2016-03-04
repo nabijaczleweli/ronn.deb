@@ -11,7 +11,7 @@ Build-Depends: debhelper (>= 9~),
                ruby-mustache (>= 0.7.0),
                ruby-rdiscount (>= 1.5.8),
                ruby-test-unit
-Standards-Version: 3.9.6
+Standards-Version: 3.9.7
 Homepage: https://rtomayko.github.com/ronn
 Vcs-Git: https://anonscm.debian.org/git/pkg-ruby-extras/ruby-ronn.git
 Vcs-Browser: https://anonscm.debian.org/cgit/pkg-ruby-extras/ruby-ronn.git
