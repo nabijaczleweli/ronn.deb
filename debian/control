@@ -13,7 +13,7 @@ Build-Depends: debhelper (>= 9~),
                ruby-test-unit
 Standards-Version: 3.9.6
 Homepage: https://rtomayko.github.com/ronn
-Vcs-Git: https://anonscm.debian.org/pkg-ruby-extras/ruby-ronn.git
+Vcs-Git: https://anonscm.debian.org/git/pkg-ruby-extras/ruby-ronn.git
 Vcs-Browser: https://anonscm.debian.org/cgit/pkg-ruby-extras/ruby-ronn.git
 XS-Ruby-Versions: all
 Testsuite: autopkgtest-pkg-ruby
