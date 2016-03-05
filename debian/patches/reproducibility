@@ -1,0 +1,119 @@
+Description: use locale agnostic output
+Author: Chris Lamb <lamby@debian.org>
+Last-Update: 2015-12-06
+Bug-Debian: https://bugs.debian.org/807201
+
+--- a/lib/ronn/roff.rb
++++ b/lib/ronn/roff.rb
+@@ -33,7 +33,7 @@
+       comment "generated with Ronn/v#{Ronn.version}"
+       comment "http://github.com/rtomayko/ronn/tree/#{Ronn.revision}"
+       return if name.nil?
+-      macro "TH", %["#{escape(name.upcase)}" "#{section}" "#{date.strftime('%B %Y')}" "#{version}" "#{manual}"]
++      macro "TH", %["#{escape(name.upcase)}" "#{section}" "#{date.strftime('%Y-%m-%d')}" "#{version}" "#{manual}"]
+     end
+ 
+     def remove_extraneous_elements!(doc)
+--- a/lib/ronn/template.rb
++++ b/lib/ronn/template.rb
+@@ -67,7 +67,7 @@
+     end
+ 
+     def date
+-      @document.date.strftime('%B %Y')
++      @document.date.strftime('%Y-%m-%d')
+     end
+ 
+     def wrap_class_name
+--- a/test/test_ronn.rb
++++ b/test/test_ronn.rb
+@@ -23,7 +23,7 @@
+     assert_equal %[.\\" generated with Ronn/v#{Ronn::version}], lines.shift
+     assert_equal %[.\\" http://github.com/rtomayko/ronn/tree/#{Ronn::revision}], lines.shift
+     assert_equal %[.], lines.shift
+-    assert_equal %[.TH "HELLO" "1" "November 2009" "" ""], lines.shift
++    assert_equal %[.TH "HELLO" "1" "2009-11-23" "" ""], lines.shift
+     assert_equal %[.], lines.shift
+     assert_equal %[.SH "NAME"], lines.shift
+     assert_equal %[\\fBhello\\fR \\- hello world], lines.shift
+@@ -61,7 +61,7 @@
+ 
+   test "abbides by the RONN_DATE environment variable" do
+     output = `echo '# hello(1) -- hello world' | RONN_DATE=1979-01-01 #{ronn} --html`
+-    assert_match(/January 1979/, output)
++    assert_match(/1979-01-01/, output)
+   end
+ 
+   test "abbides by the RONN_ORGANIZATION environment variable" do
+--- a/test/definition_list_syntax.roff
++++ b/test/definition_list_syntax.roff
+@@ -1,4 +1,4 @@
+-.TH "DEFITION_LIST_SYNTAX" "5" "January 1979" "" ""
++.TH "DEFITION_LIST_SYNTAX" "5" "1979-01-01" "" ""
+ .
+ .SH "NAME"
+ \fBdefition_list_syntax\fR \- hiya
+--- a/test/dots_at_line_start_test.roff
++++ b/test/dots_at_line_start_test.roff
+@@ -1,4 +1,4 @@
+-.TH "DOTS_AT_LINE_START_TEST" "" "January 1979" "" ""
++.TH "DOTS_AT_LINE_START_TEST" "" "1979-01-01" "" ""
+ .
+ .SH "NAME"
+ \fBdots_at_line_start_test\fR
+--- a/test/entity_encoding_test.roff
++++ b/test/entity_encoding_test.roff
+@@ -1,4 +1,4 @@
+-.TH "HELLO" "1" "January 1979" "" ""
++.TH "HELLO" "1" "1979-01-01" "" ""
+ .
+ .SH "NAME"
+ \fBhello\fR \- hello world
+--- a/test/markdown_syntax.roff
++++ b/test/markdown_syntax.roff
+@@ -1,4 +1,4 @@
+-.TH "MARKDOWN" "5" "January 1979" "" ""
++.TH "MARKDOWN" "5" "1979-01-01" "" ""
+ .
+ .SH "NAME"
+ \fBmarkdown\fR \- humane markup syntax
+--- a/test/middle_paragraph.roff
++++ b/test/middle_paragraph.roff
+@@ -1,4 +1,4 @@
+-.TH "TEST" "1" "January 1979" "" ""
++.TH "TEST" "1" "1979-01-01" "" ""
+ .
+ .SH "NAME"
+ \fBtest\fR \- just a ron test
+--- a/test/missing_spaces.roff
++++ b/test/missing_spaces.roff
+@@ -1,4 +1,4 @@
+-.TH "MISSING_SPACES" "" "January 1979" "" ""
++.TH "MISSING_SPACES" "" "1979-01-01" "" ""
+ .
+ .SH "NAME"
+ \fBmissing_spaces\fR
+--- a/test/pre_block_with_quotes.roff
++++ b/test/pre_block_with_quotes.roff
+@@ -1,4 +1,4 @@
+-.TH "T" "1" "January 1979" "" ""
++.TH "T" "1" "1979-01-01" "" ""
+ .
+ .SH "NAME"
+ \fBt\fR \- test
+--- a/test/section_reference_links.roff
++++ b/test/section_reference_links.roff
+@@ -1,4 +1,4 @@
+-.TH "SECTION_REFERENCE_LINKS" "1" "January 1979" "" ""
++.TH "SECTION_REFERENCE_LINKS" "1" "1979-01-01" "" ""
+ .
+ .SH "NAME"
+ \fBsection_reference_links\fR \- linking to sections
+--- a/test/underline_spacing_test.roff
++++ b/test/underline_spacing_test.roff
+@@ -1,4 +1,4 @@
+-.TH "UNDERLINE_SPACING_TEST" "" "January 1979" "" ""
++.TH "UNDERLINE_SPACING_TEST" "" "1979-01-01" "" ""
+ .
+ .SH "NAME"
+ \fBunderline_spacing_test\fR
