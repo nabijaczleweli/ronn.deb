@@ -22,6 +22,7 @@ Package: ruby-ronn
 Architecture: all
 XB-Ruby-Versions: ${ruby:Versions}
 Depends: ruby | ruby-interpreter,
+         groff,
          ruby-hpricot (>= 0.8.2),
          ruby-mustache (>= 0.7.0),
          ruby-rdiscount (>= 1.5.8),
