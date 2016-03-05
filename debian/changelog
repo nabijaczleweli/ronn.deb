@@ -1,3 +1,22 @@
+ruby-ronn (0.7.3-4) unstable; urgency=medium
+
+  * Team upload
+
+  [ Sebastien Badia ]
+  * Add ruby-test-unit to Build-Depends for ruby2.2
+  * Update Vcs-Browser to cgit URL and HTTPS
+
+  [ Cédric Boutillier ]
+  * Bump debhelper compatibility level to 9
+  * Remove version in the gem2deb build-dependency
+  * Use https:// in Vcs-* fields
+  * Bump Standards-Version to 3.9.7 (no changes needed)
+  * Add dependency on groff (Closes: #771599)
+  * Use locale agnostic output to make build of packages using ronn
+    reproducible. Thanks Chris Lamb for the patch (Closes: #807201)
+
+ -- Cédric Boutillier <boutil@debian.org>  Sat, 05 Mar 2016 17:08:42 +0100
+
 ruby-ronn (0.7.3-3) unstable; urgency=low
 
   * Team upload.
