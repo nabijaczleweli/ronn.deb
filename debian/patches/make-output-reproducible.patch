@@ -1,50 +1,62 @@
-Description: use locale agnostic output
-Author: Chris Lamb <lamby@debian.org>
-Last-Update: 2015-12-06
-Bug-Debian: https://bugs.debian.org/807201
+From 7361d1e535cf4c07e4a9fa352e27e76e3cfaca58 Mon Sep 17 00:00:00 2001
+From: Chris Lamb <chris@chris-lamb.co.uk>
+Date: Sat, 2 Jul 2016 21:11:41 +0200
+Subject: [PATCH] Make the output reproducible.
 
+Prefer UTC & locale-agnostic timestamps, as well as fallback to the
+SOURCE_DATE_EPOCH[0] environment variable instead of using Time.now (eg
+when passing input via stdin).
+
+ [0] https://reproducible-builds.org/specs/source-date-epoch/
+
+Signed-off-by: Chris Lamb <chris@chris-lamb.co.uk>
+---
+ lib/ronn/document.rb              | 1 +
+ lib/ronn/roff.rb                  | 2 +-
+ lib/ronn/template.rb              | 2 +-
+ test/definition_list_syntax.roff  | 2 +-
+ test/dots_at_line_start_test.roff | 2 +-
+ test/entity_encoding_test.roff    | 2 +-
+ test/markdown_syntax.roff         | 2 +-
+ test/middle_paragraph.roff        | 2 +-
+ test/missing_spaces.roff          | 2 +-
+ test/pre_block_with_quotes.roff   | 2 +-
+ test/section_reference_links.roff | 2 +-
+ test/underline_spacing_test.roff  | 2 +-
+ 12 files changed, 12 insertions(+), 11 deletions(-)
+
+--- a/lib/ronn/document.rb
++++ b/lib/ronn/document.rb
+@@ -166,6 +166,7 @@ module Ronn
+     def date
+       return @date if @date
+       return File.mtime(path) if File.exist?(path)
++      return Time.at(ENV['SOURCE_DATE_EPOCH'].to_i).gmtime if not ENV['SOURCE_DATE_EPOCH'].nil?
+       Time.now
+     end
+ 
 --- a/lib/ronn/roff.rb
 +++ b/lib/ronn/roff.rb
-@@ -33,7 +33,7 @@
+@@ -33,7 +33,7 @@ module Ronn
        comment "generated with Ronn/v#{Ronn.version}"
        comment "http://github.com/rtomayko/ronn/tree/#{Ronn.revision}"
        return if name.nil?
 -      macro "TH", %["#{escape(name.upcase)}" "#{section}" "#{date.strftime('%B %Y')}" "#{version}" "#{manual}"]
-+      macro "TH", %["#{escape(name.upcase)}" "#{section}" "#{date.strftime('%Y-%m-%d')}" "#{version}" "#{manual}"]
++      macro "TH", %["#{escape(name.upcase)}" "#{section}" "#{date.utc.strftime('%Y-%m-%d')}" "#{version}" "#{manual}"]
      end
  
      def remove_extraneous_elements!(doc)
 --- a/lib/ronn/template.rb
 +++ b/lib/ronn/template.rb
-@@ -67,7 +67,7 @@
+@@ -67,7 +67,7 @@ module Ronn
      end
  
      def date
 -      @document.date.strftime('%B %Y')
-+      @document.date.strftime('%Y-%m-%d')
++      @document.date.utc.strftime('%Y-%m-%d')
      end
  
      def wrap_class_name
---- a/test/test_ronn.rb
-+++ b/test/test_ronn.rb
-@@ -23,7 +23,7 @@
-     assert_equal %[.\\" generated with Ronn/v#{Ronn::version}], lines.shift
-     assert_equal %[.\\" http://github.com/rtomayko/ronn/tree/#{Ronn::revision}], lines.shift
-     assert_equal %[.], lines.shift
--    assert_equal %[.TH "HELLO" "1" "November 2009" "" ""], lines.shift
-+    assert_equal %[.TH "HELLO" "1" "2009-11-23" "" ""], lines.shift
-     assert_equal %[.], lines.shift
-     assert_equal %[.SH "NAME"], lines.shift
-     assert_equal %[\\fBhello\\fR \\- hello world], lines.shift
-@@ -61,7 +61,7 @@
- 
-   test "abbides by the RONN_DATE environment variable" do
-     output = `echo '# hello(1) -- hello world' | RONN_DATE=1979-01-01 #{ronn} --html`
--    assert_match(/January 1979/, output)
-+    assert_match(/1979-01-01/, output)
-   end
- 
-   test "abbides by the RONN_ORGANIZATION environment variable" do
 --- a/test/definition_list_syntax.roff
 +++ b/test/definition_list_syntax.roff
 @@ -1,4 +1,4 @@
