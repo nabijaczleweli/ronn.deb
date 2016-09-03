@@ -1,8 +1,8 @@
 ruby-ronn (0.7.3-5) UNRELEASED; urgency=medium
 
   * Team upload.
-  * Replace existing output reproducibility patch with a new, more complete
-    one (Closes: #829362)
+  * Replace existing output reproducibility patch with a new, less invasive
+    one. Thanks to Chris Lamb for the original patch (Closes: #829362)
   * Refresh packaging with `dh-maske-ruby -w`.
 
  -- Antonio Terceiro <terceiro@debian.org>  Sat, 03 Sep 2016 08:27:31 -0300

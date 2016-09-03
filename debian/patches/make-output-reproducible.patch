@@ -3,129 +3,20 @@ From: Chris Lamb <chris@chris-lamb.co.uk>
 Date: Sat, 2 Jul 2016 21:11:41 +0200
 Subject: [PATCH] Make the output reproducible.
 
-Prefer UTC & locale-agnostic timestamps, as well as fallback to the
-SOURCE_DATE_EPOCH[0] environment variable instead of using Time.now (eg
-when passing input via stdin).
+When a document has not explicit date set, fallback to the SOURCE_DATE_EPOCH[0]
+environment variable before using the current time.
 
  [0] https://reproducible-builds.org/specs/source-date-epoch/
 
 Signed-off-by: Chris Lamb <chris@chris-lamb.co.uk>
----
- lib/ronn/document.rb              | 1 +
- lib/ronn/roff.rb                  | 2 +-
- lib/ronn/template.rb              | 2 +-
- test/definition_list_syntax.roff  | 2 +-
- test/dots_at_line_start_test.roff | 2 +-
- test/entity_encoding_test.roff    | 2 +-
- test/markdown_syntax.roff         | 2 +-
- test/middle_paragraph.roff        | 2 +-
- test/missing_spaces.roff          | 2 +-
- test/pre_block_with_quotes.roff   | 2 +-
- test/section_reference_links.roff | 2 +-
- test/underline_spacing_test.roff  | 2 +-
- 12 files changed, 12 insertions(+), 11 deletions(-)
-
+Signed-off-by: Antonio Terceiro <terceiro@debian.org>
 --- a/lib/ronn/document.rb
 +++ b/lib/ronn/document.rb
-@@ -166,6 +166,7 @@ module Ronn
+@@ -165,6 +165,7 @@ module Ronn
+     # the current time.
      def date
        return @date if @date
++      return Time.at(ENV['SOURCE_DATE_EPOCH'].to_i).gmtime if ENV['SOURCE_DATE_EPOCH']
        return File.mtime(path) if File.exist?(path)
-+      return Time.at(ENV['SOURCE_DATE_EPOCH'].to_i).gmtime if not ENV['SOURCE_DATE_EPOCH'].nil?
        Time.now
      end
- 
---- a/lib/ronn/roff.rb
-+++ b/lib/ronn/roff.rb
-@@ -33,7 +33,7 @@ module Ronn
-       comment "generated with Ronn/v#{Ronn.version}"
-       comment "http://github.com/rtomayko/ronn/tree/#{Ronn.revision}"
-       return if name.nil?
--      macro "TH", %["#{escape(name.upcase)}" "#{section}" "#{date.strftime('%B %Y')}" "#{version}" "#{manual}"]
-+      macro "TH", %["#{escape(name.upcase)}" "#{section}" "#{date.utc.strftime('%Y-%m-%d')}" "#{version}" "#{manual}"]
-     end
- 
-     def remove_extraneous_elements!(doc)
---- a/lib/ronn/template.rb
-+++ b/lib/ronn/template.rb
-@@ -67,7 +67,7 @@ module Ronn
-     end
- 
-     def date
--      @document.date.strftime('%B %Y')
-+      @document.date.utc.strftime('%Y-%m-%d')
-     end
- 
-     def wrap_class_name
---- a/test/definition_list_syntax.roff
-+++ b/test/definition_list_syntax.roff
-@@ -1,4 +1,4 @@
--.TH "DEFITION_LIST_SYNTAX" "5" "January 1979" "" ""
-+.TH "DEFITION_LIST_SYNTAX" "5" "1979-01-01" "" ""
- .
- .SH "NAME"
- \fBdefition_list_syntax\fR \- hiya
---- a/test/dots_at_line_start_test.roff
-+++ b/test/dots_at_line_start_test.roff
-@@ -1,4 +1,4 @@
--.TH "DOTS_AT_LINE_START_TEST" "" "January 1979" "" ""
-+.TH "DOTS_AT_LINE_START_TEST" "" "1979-01-01" "" ""
- .
- .SH "NAME"
- \fBdots_at_line_start_test\fR
---- a/test/entity_encoding_test.roff
-+++ b/test/entity_encoding_test.roff
-@@ -1,4 +1,4 @@
--.TH "HELLO" "1" "January 1979" "" ""
-+.TH "HELLO" "1" "1979-01-01" "" ""
- .
- .SH "NAME"
- \fBhello\fR \- hello world
---- a/test/markdown_syntax.roff
-+++ b/test/markdown_syntax.roff
-@@ -1,4 +1,4 @@
--.TH "MARKDOWN" "5" "January 1979" "" ""
-+.TH "MARKDOWN" "5" "1979-01-01" "" ""
- .
- .SH "NAME"
- \fBmarkdown\fR \- humane markup syntax
---- a/test/middle_paragraph.roff
-+++ b/test/middle_paragraph.roff
-@@ -1,4 +1,4 @@
--.TH "TEST" "1" "January 1979" "" ""
-+.TH "TEST" "1" "1979-01-01" "" ""
- .
- .SH "NAME"
- \fBtest\fR \- just a ron test
---- a/test/missing_spaces.roff
-+++ b/test/missing_spaces.roff
-@@ -1,4 +1,4 @@
--.TH "MISSING_SPACES" "" "January 1979" "" ""
-+.TH "MISSING_SPACES" "" "1979-01-01" "" ""
- .
- .SH "NAME"
- \fBmissing_spaces\fR
---- a/test/pre_block_with_quotes.roff
-+++ b/test/pre_block_with_quotes.roff
-@@ -1,4 +1,4 @@
--.TH "T" "1" "January 1979" "" ""
-+.TH "T" "1" "1979-01-01" "" ""
- .
- .SH "NAME"
- \fBt\fR \- test
---- a/test/section_reference_links.roff
-+++ b/test/section_reference_links.roff
-@@ -1,4 +1,4 @@
--.TH "SECTION_REFERENCE_LINKS" "1" "January 1979" "" ""
-+.TH "SECTION_REFERENCE_LINKS" "1" "1979-01-01" "" ""
- .
- .SH "NAME"
- \fBsection_reference_links\fR \- linking to sections
---- a/test/underline_spacing_test.roff
-+++ b/test/underline_spacing_test.roff
-@@ -1,4 +1,4 @@
--.TH "UNDERLINE_SPACING_TEST" "" "January 1979" "" ""
-+.TH "UNDERLINE_SPACING_TEST" "" "1979-01-01" "" ""
- .
- .SH "NAME"
- \fBunderline_spacing_test\fR
