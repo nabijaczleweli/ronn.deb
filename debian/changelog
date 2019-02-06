@@ -1,5 +1,6 @@
-ruby-ronn (0.8.0-1) UNRELEASED; urgency=medium
+ruby-ronn (0.8.0-1) unstable; urgency=medium
 
+  * Team upload
   * New upstream version 0.8.0
     we now track ronn-ng active fork as original project is stalled
     (Closes: #917318)
@@ -11,8 +12,11 @@ ruby-ronn (0.8.0-1) UNRELEASED; urgency=medium
   * Refresh make-output-reproducible.patch
   * Use https in copyright format URL
   * Drop obsolete patches
+  * Add patch to relax gem dependencies in gemspec
+  * Update dependencies: we don't depend on ruby-hpricot (Closes: #796497)
+  * Rename project as ronn in ronn-ng.gemspec
 
- -- Cédric Boutillier <boutil@debian.org>  Wed, 06 Feb 2019 10:44:47 +0100
+ -- Cédric Boutillier <boutil@debian.org>  Wed, 06 Feb 2019 23:53:40 +0100
 
 ruby-ronn (0.7.3-5) unstable; urgency=medium
 
