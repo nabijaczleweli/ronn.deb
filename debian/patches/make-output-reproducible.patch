@@ -12,11 +12,12 @@ Signed-off-by: Chris Lamb <chris@chris-lamb.co.uk>
 Signed-off-by: Antonio Terceiro <terceiro@debian.org>
 --- a/lib/ronn/document.rb
 +++ b/lib/ronn/document.rb
-@@ -165,6 +165,7 @@ module Ronn
-     # the current time.
+@@ -181,6 +181,8 @@
      def date
        return @date if @date
+ 
 +      return Time.at(ENV['SOURCE_DATE_EPOCH'].to_i).gmtime if ENV['SOURCE_DATE_EPOCH']
++
        return File.mtime(path) if File.exist?(path)
+ 
        Time.now
-     end
