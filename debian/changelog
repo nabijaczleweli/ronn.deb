@@ -1,11 +1,18 @@
 ruby-ronn (0.8.0-1) UNRELEASED; urgency=medium
 
-  * Move debian/watch to gemwatch.debian.net
-  * Track ronn-ng fork
-  * track ronn-ng on github
   * New upstream version 0.8.0
+    we now track ronn-ng active fork as original project is stalled
+    (Closes: #917318)
+  * Change Homepage fields accordingly
+  * Move debian/watch to gemwatch.debian.net
+  * Bump debhelper compatibility level to 11
+  * Use salsa.debian.org in Vcs-* fields
+  * Bump Standards-Version to 4.3.0 (no changes needed)
+  * Refresh make-output-reproducible.patch
+  * Use https in copyright format URL
+  * Drop obsolete patches
 
- -- Cédric Boutillier <boutil@debian.org>  Wed, 06 Feb 2019 10:35:59 +0100
+ -- Cédric Boutillier <boutil@debian.org>  Wed, 06 Feb 2019 10:44:47 +0100
 
 ruby-ronn (0.7.3-5) unstable; urgency=medium
 
