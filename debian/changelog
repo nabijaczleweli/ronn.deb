@@ -1,3 +1,12 @@
+ruby-ronn (0.8.0-1) UNRELEASED; urgency=medium
+
+  * Move debian/watch to gemwatch.debian.net
+  * Track ronn-ng fork
+  * track ronn-ng on github
+  * New upstream version 0.8.0
+
+ -- Cédric Boutillier <boutil@debian.org>  Wed, 06 Feb 2019 10:35:59 +0100
+
 ruby-ronn (0.7.3-5) unstable; urgency=medium
 
   * Team upload.
