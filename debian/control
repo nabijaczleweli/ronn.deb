@@ -3,7 +3,7 @@ Section: ruby
 Priority: optional
 Maintainer: Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>
 Uploaders: Martin Ueding <dev@martin-ueding.de>
-Build-Depends: debhelper (>= 9~),
+Build-Depends: debhelper (>= 11~),
                gem2deb,
                rake,
                ruby-contest,
