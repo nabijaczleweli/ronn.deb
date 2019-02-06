@@ -1,2 +1,2 @@
 version=3
-https://gemwatch.debian.net/ronn .*/ronn-(.*).tar.gz
+https://gemwatch.debian.net/ronn .*/ronn-ng-(.*).tar.gz
