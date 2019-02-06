@@ -13,7 +13,7 @@ Build-Depends: debhelper (>= 11~),
                ruby-rdiscount (>= 1.5.8),
                ruby-test-unit
 Standards-Version: 4.3.0
-Homepage: https://rtomayko.github.com/ronn
+Homepage: https://github.com/apjanke/ronn-ng
 Vcs-Git: https://salsa.debian.org/ruby-team/ruby-ronn.git
 Vcs-Browser: https://salsa.debian.org/ruby-team/ruby-ronn
 Testsuite: autopkgtest-pkg-ruby
