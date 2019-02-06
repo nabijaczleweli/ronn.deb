@@ -1,7 +1,8 @@
 require 'time'
 require 'cgi'
-require 'hpricot'
+require 'nokogiri'
 require 'rdiscount'
+require 'ronn/index'
 require 'ronn/roff'
 require 'ronn/template'
 require 'ronn/utils'
@@ -32,11 +33,11 @@ module Ronn
     # a program or filename; displayed along with the section in
     # the left and right portions of the header as well as the bottom
     # right section of the footer.
-    attr_accessor :name
+    attr_writer :name
 
     # The man page's section: a string whose first character
     # is numeric; displayed in parenthesis along with the name.
-    attr_accessor :section
+    attr_writer :section
 
     # Single sentence description of the thing being described
     # by this man page; displayed in the NAME section.
@@ -52,26 +53,29 @@ module Ronn
 
     # The date the document was published; center displayed in
     # the document footer.
-    attr_accessor :date
+    attr_writer :date
 
     # Array of style modules to apply to the document.
-    attr_accessor :styles
+    attr_reader :styles
+
+    # Output directory to write files to
+    attr_accessor :outdir
 
     # Create a Ronn::Document given a path or with the data returned by
     # calling the block. The document is loaded and preprocessed before
     # the intialize method returns. The attributes hash may contain values
     # for any writeable attributes defined on this class.
-    def initialize(path=nil, attributes={}, &block)
+    def initialize(path = nil, attributes = {}, &block)
       @path = path
       @basename = path.to_s =~ /^-?$/ ? nil : File.basename(path)
       @reader = block ||
-        lambda do |f|
-          if ['-', nil].include?(f)
-            STDIN.read
-          else
-            File.read(f)
-          end
-        end
+                lambda do |f|
+                  if ['-', nil].include?(f)
+                    STDIN.read
+                  else
+                    File.read(f)
+                  end
+                end
       @data = @reader.call(path)
       @name, @section, @tagline = sniff
 
@@ -81,24 +85,26 @@ module Ronn
       @index = Ronn::Index[path || '.']
       @index.add_manual(self) if path && name
 
-      attributes.each { |attr_name,value| send("#{attr_name}=", value) }
+      attributes.each { |attr_name, value| send("#{attr_name}=", value) }
     end
 
     # Generate a file basename of the form "<name>.<section>.<type>"
     # for the given file extension. Uses the name and section from
     # the source file path but falls back on the name and section
     # defined in the document.
-    def basename(type=nil)
+    def basename(type = nil)
       type = nil if ['', 'roff'].include?(type.to_s)
-      [path_name || @name, path_section || @section, type].
-      compact.join('.')
+      [path_name || @name, path_section || @section, type]
+        .compact.join('.')
     end
 
     # Construct a path for a file near the source file. Uses the
     # Document#basename method to generate the basename part and
     # appends it to the dirname of the source document.
-    def path_for(type=nil)
-      if @basename
+    def path_for(type = nil)
+      if @outdir
+        File.join(@outdir, basename(type))
+      elsif @basename
         File.join(File.dirname(path), basename(type))
       else
         basename(type)
@@ -109,7 +115,12 @@ module Ronn
     # available. This is used as the manual page name when the
     # file contents do not include a name section.
     def path_name
-      @basename[/^[^.]+/] if @basename
+      return unless @basename
+
+      parts = @basename.split('.')
+      parts.pop if parts.last.casecmp('ronn').zero?
+      parts.pop if parts.last =~ /^\d+$/
+      parts.join('.')
     end
 
     # Returns the <section> part of the path, or nil when
@@ -119,7 +130,10 @@ module Ronn
     end
 
     # Returns the manual page name based first on the document's
-    # contents and then on the path name.
+    # contents and then on the path name. Usually a single word name of
+    # a program or filename; displayed along with the section in
+    # the left and right portions of the header as well as the bottom
+    # right section of the footer.
     def name
       @name || path_name
     end
@@ -131,7 +145,8 @@ module Ronn
     end
 
     # Returns the manual page section based first on the document's
-    # contents and then on the path name.
+    # contents and then on the path name. A string whose first character
+    # is numeric; displayed in parenthesis along with the name.
     def section
       @section || path_section
     end
@@ -157,15 +172,17 @@ module Ronn
     # The document's title when no name section was defined. When a name section
     # exists, this value is nil.
     def title
-      @tagline if !name?
+      @tagline unless name?
     end
 
     # The date the man page was published. If not set explicitly,
     # this is the file's modified time or, if no file is given,
-    # the current time.
+    # the current time. Center displayed in the document footer.
     def date
       return @date if @date
+
       return File.mtime(path) if File.exist?(path)
+
       Time.now
     end
 
@@ -174,7 +191,7 @@ module Ronn
     # id and +text+ is the inner text of the heading element.
     def toc
       @toc ||=
-        html.search('h2[@id]').map { |h2| [h2.attributes['id'], h2.inner_text] }
+        html.search('h2[@id]').map { |h2| [h2.attributes['id'].content.upcase, h2.inner_text] }
     end
     alias section_heads toc
 
@@ -188,7 +205,7 @@ module Ronn
     # tuple of the form: [name, section, description], where missing information
     # is represented by nil and any element may be missing.
     def sniff
-      html = Markdown.new(data[0, 512]).to_html
+      html = Markdown.new(data[0, 512], :no_superscript).to_html
       heading, html = html.split("</h1>\n", 2)
       return [nil, nil, nil] if html.nil?
 
@@ -210,7 +227,7 @@ module Ronn
       @markdown ||= process_markdown!
     end
 
-    # A Hpricot::Document for the manual content fragment.
+    # A Nokogiri DocumentFragment for the manual content fragment.
     def html
       @html ||= process_html!
     end
@@ -224,36 +241,38 @@ module Ronn
     # Convert the document to roff and return the result as a string.
     def to_roff
       RoffFilter.new(
-        to_html_fragment(wrap_class=nil),
+        to_html_fragment(nil),
         name, section, tagline,
         manual, organization, date
       ).to_s
     end
 
     # Convert the document to HTML and return the result as a string.
+    # The returned string is a complete HTML document.
     def to_html
-      if layout = ENV['RONN_LAYOUT']
-        if !File.exist?(layout_path = File.expand_path(layout))
+      layout = ENV['RONN_LAYOUT']
+      layout_path = nil
+      if layout
+        layout_path = File.expand_path(layout)
+        unless File.exist?(layout_path)
           warn "warn: can't find #{layout}, using default layout."
           layout_path = nil
         end
       end
 
       template = Ronn::Template.new(self)
-      template.context.push :html => to_html_fragment(wrap_class=nil)
+      template.context.push html: to_html_fragment(nil)
       template.render(layout_path || 'default')
     end
 
     # Convert the document to HTML and return the result
     # as a string. The HTML does not include <html>, <head>,
     # or <style> tags.
-    def to_html_fragment(wrap_class='mp')
-      return html.to_s if wrap_class.nil?
-      [
-        "<div class='#{wrap_class}'>",
-        html.to_s,
-        "</div>"
-      ].join("\n")
+    def to_html_fragment(wrap_class = 'mp')
+      frag_nodes = html.at('body').children
+      out = frag_nodes.to_s.rstrip
+      out = "<div class='#{wrap_class}'>#{out}\n</div>" unless wrap_class.nil?
+      out
     end
 
     def to_markdown
@@ -261,8 +280,8 @@ module Ronn
     end
 
     def to_h
-      %w[name section tagline manual organization date styles toc].
-      inject({}) { |hash, name| hash[name] = send(name); hash }
+      %w[name section tagline manual organization date styles toc]
+        .each_with_object({}) { |name, hash| hash[name] = send(name) }
     end
 
     def to_yaml
@@ -275,7 +294,8 @@ module Ronn
       to_h.merge('date' => date.iso8601).to_json
     end
 
-  protected
+    protected
+
     ##
     # Document Processing
 
@@ -287,7 +307,7 @@ module Ronn
     end
 
     def input_html
-      @input_html ||= strip_heading(Markdown.new(markdown).to_html)
+      @input_html ||= strip_heading(Markdown.new(markdown, :no_superscript).to_html)
     end
 
     def strip_heading(html)
@@ -296,13 +316,14 @@ module Ronn
     end
 
     def process_markdown!
-      markdown = markdown_filter_heading_anchors(self.data)
-      markdown_filter_link_index(markdown)
-      markdown_filter_angle_quotes(markdown)
+      md = markdown_filter_heading_anchors(data)
+      md = markdown_filter_link_index(md)
+      markdown_filter_angle_quotes(md)
     end
 
     def process_html!
-      @html = Hpricot(input_html)
+      wrapped_html = "<html>\n  <body>\n#{input_html}\n  </body>\n</html>"
+      @html = Nokogiri::HTML.parse(wrapped_html)
       html_filter_angle_quotes
       html_filter_definition_lists
       html_filter_inject_name_section
@@ -319,8 +340,10 @@ module Ronn
     # links. This lets us use [foo(3)][] syntax to link to index entries.
     def markdown_filter_link_index(markdown)
       return markdown if index.nil? || index.empty?
+
       markdown << "\n\n"
       index.each { |ref| markdown << "[#{ref.name}]: #{ref.url}\n" }
+      markdown
     end
 
     # Add [id]: #ANCHOR elements to the markdown source text for all sections.
@@ -339,11 +362,11 @@ module Ronn
 
     # Convert <WORD> to <var>WORD</var> but only if WORD isn't an HTML tag.
     def markdown_filter_angle_quotes(markdown)
-      markdown.gsub(/\<([^:.\/]+?)\>/) do |match|
+      markdown.gsub(/<([^:.\/]+?)>/) do |match|
         contents = $1
         tag, attrs = contents.split(' ', 2)
         if attrs =~ /\/=/ || html_element?(tag.sub(/^\//, '')) ||
-           data.include?("</#{tag}>")
+           data.include?("</#{tag}>") || contents =~ /^!/
           match.to_s
         else
           "<var>#{contents}</var>"
@@ -355,12 +378,14 @@ module Ronn
     def html_filter_angle_quotes
       # convert all angle quote vars nested in code blocks
       # back to the original text
-      @html.search('code').search('text()').each do |node|
+      code_nodes = @html.search('code')
+      code_nodes.search('.//text() | text()').each do |node|
         next unless node.to_html.include?('var&gt;')
+
         new =
-          node.to_html.
-            gsub('&lt;var&gt;', '&lt;').
-            gsub("&lt;/var&gt;", '>')
+          node.to_html
+              .gsub('&lt;var&gt;', '&lt;')
+              .gsub('&lt;/var&gt;', '>')
         node.swap(new)
       end
     end
@@ -368,27 +393,28 @@ module Ronn
     # Convert special format unordered lists to definition lists.
     def html_filter_definition_lists
       # process all unordered lists depth-first
-      @html.search('ul').to_a.reverse.each do |ul|
+      @html.search('ul').to_a.reverse_each do |ul|
         items = ul.search('li')
         next if items.any? { |item| item.inner_text.split("\n", 2).first !~ /:$/ }
 
-        ul.name = 'dl'
+        dl = Nokogiri::XML::Node.new 'dl', html
         items.each do |item|
-          if child = item.at('p')
-            wrap = '<p></p>'
-            container = child
-          else
-            wrap = '<dd></dd>'
-            container = item
-          end
-          term, definition = container.inner_html.split(":\n", 2)
+          # This processing is specific to how Markdown generates definition lists
+          term, definition = item.inner_html.split(":\n", 2)
+          term = term.sub(/^<p>/, '')
 
-          dt = item.before("<dt>#{term}</dt>").first
+          dt = Nokogiri::XML::Node.new 'dt', html
+          dt.children = Nokogiri::HTML.fragment(term)
           dt.attributes['class'] = 'flush' if dt.inner_text.length <= 7
 
-          item.name = 'dd'
-          container.swap(wrap.sub(/></, ">#{definition}<"))
+          dd = Nokogiri::XML::Node.new 'dd', html
+          dd_contents = Nokogiri::HTML.fragment(definition)
+          dd.children = dd_contents
+
+          dl.add_child(dt)
+          dl.add_child(dd)
         end
+        ul.replace(dl)
       end
     end
 
@@ -397,23 +423,24 @@ module Ronn
         if title?
           "<h1>#{title}</h1>"
         elsif name
-          "<h2>NAME</h2>\n" +
-          "<p class='man-name'>\n  <code>#{name}</code>" +
-          (tagline ? " - <span class='man-whatis'>#{tagline}</span>\n" : "\n") +
-          "</p>\n"
+          "<h2>NAME</h2>\n" \
+            "<p class='man-name'>\n  <code>#{name}</code>" +
+            (tagline ? " - <span class='man-whatis'>#{tagline}</span>\n" : "\n") +
+            "</p>\n"
         end
-      if markup
-        if @html.children
-          @html.at("*").before(markup)
-        else
-          @html = Hpricot(markup)
-        end
+      return unless markup
+
+      if html.at('body').first_element_child
+        html.at('body').first_element_child.before(Nokogiri::HTML.fragment(markup))
+      else
+        html.at('body').add_child(Nokogiri::HTML.fragment(markup))
       end
     end
 
     # Add URL anchors to all HTML heading elements.
     def html_filter_heading_anchors
-      @html.search('h2|h3|h4|h5|h6').not('[@id]').each do |heading|
+      h_nodes = @html.search('//*[self::h1 or self::h2 or self::h3 or self::h4 or self::h5 and not(@id)]')
+      h_nodes.each do |heading|
         heading.set_attribute('id', heading.inner_text.gsub(/\W+/, '-'))
       end
     end
@@ -422,37 +449,67 @@ module Ronn
     # whose text labels are the same as their href URLs.
     def html_filter_annotate_bare_links
       @html.search('a[@href]').each do |node|
-        href = node.attributes['href']
+        href = node.attributes['href'].content
         text = node.inner_text
 
-        if href == text  ||
-           href[0] == ?# ||
-           CGI.unescapeHTML(href) == "mailto:#{CGI.unescapeHTML(text)}"
-        then
-          node.set_attribute('data-bare-link', 'true')
-        end
+        next unless href == text || href[0] == '#' ||
+                    CGI.unescapeHTML(href) == "mailto:#{CGI.unescapeHTML(text)}"
+
+        node.set_attribute('data-bare-link', 'true')
       end
     end
 
-    # Convert text of the form "name(section)" to a hyperlink. The URL is
-    # obtaiend from the index.
+    # Convert text of the form "name(section)" or "<code>name</code>(section)
+    # to a hyperlink.  The URL is obtained from the index.
     def html_filter_manual_reference_links
       return if index.nil?
-      @html.search('text()').each do |node|
-        next if !node.content.include?(')')
+
+      name_pattern = '[0-9A-Za-z_:.+=@~-]+'
+
+      # Convert "name(section)" by traversing text nodes searching for
+      # text that fits the pattern.  This is the original implementation.
+      @html.search('.//text() | text()').each do |node|
+        next unless node.content.include?(')')
         next if %w[pre code h1 h2 h3].include?(node.parent.name)
         next if child_of?(node, 'a')
-        node.swap(
-          node.content.gsub(/([0-9A-Za-z_:.+=@~-]+)(\(\d+\w*\))/) {
-            name, sect = $1, $2
-            if ref = index["#{name}#{sect}"]
-              "<a class='man-ref' href='#{ref.url}'>#{name}<span class='s'>#{sect}</span></a>"
-            else
-              # warn "warn: manual reference not defined: '#{name}#{sect}'"
-              "<span class='man-ref'>#{name}<span class='s'>#{sect}</span></span>"
-            end
-          }
-        )
+        node.swap(node.content.gsub(/(#{name_pattern})(\(\d+\w*\))/) do
+          html_build_manual_reference_link($1, $2)
+        end)
+      end
+
+      # Convert "<code>name</code>(section)" by traversing <code> nodes.
+      # For each one that contains exactly an acceptable manual page name,
+      # the next sibling is checked and must be a text node beginning
+      # with a valid section in parentheses.
+      @html.search('code').each do |node|
+        next if %w[pre code h1 h2 h3].include?(node.parent.name)
+        next if child_of?(node, 'a')
+        next unless node.inner_text =~ /^#{name_pattern}$/
+        sibling = node.next
+        next unless sibling
+        next unless sibling.text?
+        next unless sibling.content =~ /^\((\d+\w*)\)/
+        node.swap(html_build_manual_reference_link(node, "(#{$1})"))
+        sibling.content = sibling.content.gsub(/^\(\d+\w*\)/, '')
+      end
+    end
+
+    # HTMLize the manual page reference.  The result is an <a> if the
+    # page appears in the index, otherwise it is a <span>.  The first
+    # argument may be an HTML element or a string.  The second should
+    # be a string of the form "(#{section})".
+    def html_build_manual_reference_link(name_or_node, section)
+      name = if name_or_node.respond_to?(:inner_text)
+               name_or_node.inner_text
+             else
+               name_or_node
+             end
+      ref = index["#{name}#{section}"]
+      if ref
+        "<a class='man-ref' href='#{ref.url}'>#{name_or_node}<span class='s'>#{section}</span></a>"
+      else
+        # warn "warn: manual reference not defined: '#{name}#{section}'"
+        "<span class='man-ref'>#{name_or_node}<span class='s'>#{section}</span></span>"
       end
     end
   end

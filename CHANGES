@@ -1,5 +1,23 @@
-Ronn CHANGES
-============
+Ronn-NG CHANGES
+===============
+
+Version 0.8.0 (2018 Dec 25)
+---------------------------
+
+* Added tables support. (apjanke)
+* Lint & Rubocop fixes. (apjanke)
+* Added --output-dir option. (apjanke)
+* Support file names with periods in the name section. (apjanke)
+* Migrated from Hpricot to Nokogiri. (apjanke)
+
+Version 0.7.4 (2018 Dec 22)
+---------------------------
+
+* Forked Ronn-NG from original Ronn. (apjanke)
+* Minor bug fixes: #4, #5 (apjanke)
+
+Original Ronn CHANGES
+=====================
 
 Version 0.7.3 (2010 June 24)
 ----------------------------

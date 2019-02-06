@@ -1,24 +1,34 @@
 Gem::Specification.new do |s|
-  s.name = 'ronn'
-  s.version = '0.7.3'
-  s.date = '2010-06-24'
+  s.name = 'ronn-ng'
+  s.version = '0.8.0'
+  s.date = '2018-12-25'
 
-  s.description = "Builds manuals"
-  s.summary     = "Builds manuals"
-  s.homepage    = "http://rtomayko.github.com/ronn"
+  s.summary     = 'Builds man pages from Markdown'
+  s.description = 'Ronn-NG builds manuals in HTML and Unix man page format from Markdown.'
+  s.homepage    = 'https://github.com/apjanke/ronn-ng'
+  s.license     = 'MIT'
 
-  s.authors     = ["Ryan Tomayko"]
-  s.email       = "rtomayko@gmail.com"
+  s.authors     = ['Andrew Janke']
+  s.email       = 'floss@apjanke.net'
+
+  s.metadata = {
+    'bug_tracker_uri'   => 'https://github.com/apjanke/ronn-ng/issues',
+    'source_code_uri'   => 'https://github.com/apjanke/ronn-ng',
+    'changelog_uri'     => 'https://github.com/apjanke/ronn-ng/blob/master/CHANGES'
+  }
 
   # = MANIFEST =
   s.files = %w[
     AUTHORS
     CHANGES
-    COPYING
-    INSTALLING
+    Gemfile
+    INSTALLING.md
+    LICENSE.txt
     README.md
     Rakefile
     bin/ronn
+    completion/bash/ronn
+    completion/zsh/_ronn
     config.ru
     lib/ronn.rb
     lib/ronn/document.rb
@@ -41,11 +51,15 @@ Gem::Specification.new do |s|
     man/ronn-format.7.ronn
     man/ronn.1
     man/ronn.1.ronn
-    ronn.gemspec
+    ronn-ng.gemspec
     test/angle_bracket_syntax.html
     test/angle_bracket_syntax.ronn
+    test/backticks.html
+    test/backticks.ronn
     test/basic_document.html
     test/basic_document.ronn
+    test/circumflexes.ronn
+    test/code_blocks.7.ronn
     test/contest.rb
     test/custom_title_document.html
     test/custom_title_document.ronn
@@ -54,6 +68,8 @@ Gem::Specification.new do |s|
     test/definition_list_syntax.ronn
     test/dots_at_line_start_test.roff
     test/dots_at_line_start_test.ronn
+    test/ellipses.roff
+    test/ellipses.ronn
     test/entity_encoding_test.html
     test/entity_encoding_test.roff
     test/entity_encoding_test.ronn
@@ -66,11 +82,17 @@ Gem::Specification.new do |s|
     test/middle_paragraph.ronn
     test/missing_spaces.roff
     test/missing_spaces.ronn
+    test/nested_list.ronn
+    test/nested_list_with_code.html
+    test/nested_list_with_code.roff
+    test/nested_list_with_code.ronn
+    test/page.with.periods.in.name.5.ronn
     test/pre_block_with_quotes.roff
     test/pre_block_with_quotes.ronn
     test/section_reference_links.html
     test/section_reference_links.roff
     test/section_reference_links.ronn
+    test/tables.ronn
     test/test_ronn.rb
     test/test_ronn_document.rb
     test/test_ronn_index.rb
@@ -84,13 +106,17 @@ Gem::Specification.new do |s|
   s.executables = ['ronn']
   s.test_files = s.files.select { |path| path =~ /^test\/.*_test.rb/ }
 
-  s.extra_rdoc_files = %w[COPYING AUTHORS]
-  s.add_dependency 'hpricot',     '>= 0.8.2'
-  s.add_dependency 'rdiscount',   '>= 1.5.8'
-  s.add_dependency 'mustache',    '>= 0.7.0'
+  s.extra_rdoc_files = %w[LICENSE.txt AUTHORS]
+  s.add_dependency 'mustache',    '~> 0.7', '>= 0.7.0'
+  s.add_dependency 'nokogiri',    '~> 1.9', '>= 1.9.0'
+  s.add_dependency 'rdiscount',   '~> 2.0', '>= 2.0.7'
+  s.add_development_dependency 'rack',      '~> 2.0',  '>= 2.0.6'
+  s.add_development_dependency 'rake',      '~> 12.3', '>= 12.3.0'
+  s.add_development_dependency 'rubocop',   '~> 0.60', '>= 0.57.1'
+  s.add_development_dependency 'sinatra',   '~> 2.0',  '>= 2.0.0'
+  s.add_development_dependency 'test-unit', '~> 3.2',  '>= 3.2.7'
 
-  s.has_rdoc = true
-  s.rdoc_options = ["--line-numbers", "--inline-source", "--title", "Ronn"]
+  s.rdoc_options = ['--line-numbers', '--inline-source', '--title', 'Ronn']
   s.require_paths = %w[lib]
   s.rubygems_version = '1.1.1'
 end
