@@ -15,8 +15,16 @@ ruby-ronn (0.8.0-1) unstable; urgency=medium
   * Add patch to relax gem dependencies in gemspec
   * Update dependencies: we don't depend on ruby-hpricot (Closes: #796497)
   * Rename project as ronn in ronn-ng.gemspec
+  * Acknowledge 0.7.3-5.1 NMU. Thanks Helmut
 
  -- Cédric Boutillier <boutil@debian.org>  Wed, 06 Feb 2019 23:53:40 +0100
+               
+ruby-ronn (0.7.3-5.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Split to new package ronn and mark it M-A:foreign. (Closes: #882163)
+
+ -- Helmut Grohne <helmut@subdivi.de>  Sun, 17 Jun 2018 20:19:10 +0200
 
 ruby-ronn (0.7.3-5) unstable; urgency=medium
 
