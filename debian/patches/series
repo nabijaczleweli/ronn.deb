@@ -1,1 +1,2 @@
 make-output-reproducible.patch
+relax-dependencies.patch
