@@ -1,0 +1,168 @@
+Description: Fix ordered lists.  This fixes #921637 and is already
+ applied upstream
+Origin: https://github.com/apjanke/ronn-ng/commit/e91949f866b338fa223126a570ae81276405fa12
+Last-Update: 2019-02-23
+
+From e91949f866b338fa223126a570ae81276405fa12 Mon Sep 17 00:00:00 2001
+From: Andrew Janke <floss@apjanke.net>
+Date: Sat, 16 Feb 2019 20:07:53 -0500
+Subject: [PATCH] Fix for basic ordered lists
+
+---
+ .idea/ronn-ng.iml      | 28 +++++-----------------------
+ lib/ronn/roff.rb       |  2 +-
+ test/ordered_list.html | 30 ++++++++++++++++++++++++++++++
+ test/ordered_list.roff | 25 +++++++++++++++++++++++++
+ test/ordered_list.ronn | 21 +++++++++++++++++++++
+ 5 files changed, 82 insertions(+), 24 deletions(-)
+ create mode 100644 test/ordered_list.html
+ create mode 100644 test/ordered_list.roff
+ create mode 100644 test/ordered_list.ronn
+
+diff --git a/.idea/ronn-ng.iml b/.idea/ronn-ng.iml
+index cabcd31..a85f561 100644
+--- a/.idea/ronn-ng.iml
++++ b/.idea/ronn-ng.iml
+@@ -5,29 +5,11 @@
+   </component>
+   <component name="NewModuleRootManager">
+     <content url="file://$MODULE_DIR$" />
+-    <orderEntry type="jdk" jdkName="ruby-2.5.3-p105" jdkType="RUBY_SDK" />
++    <orderEntry type="jdk" jdkName="ruby-2.3.7-p456" jdkType="RUBY_SDK" />
+     <orderEntry type="sourceFolder" forTests="false" />
+-    <orderEntry type="library" scope="PROVIDED" name="ast (v2.4.0, ruby-2.5.3-p105) [gem]" level="application" />
+-    <orderEntry type="library" scope="PROVIDED" name="bundler (v1.17.1, ruby-2.5.3-p105) [gem]" level="application" />
+-    <orderEntry type="library" scope="PROVIDED" name="jaro_winkler (v1.5.1, ruby-2.5.3-p105) [gem]" level="application" />
+-    <orderEntry type="library" scope="PROVIDED" name="mini_portile2 (v2.4.0, ruby-2.5.3-p105) [gem]" level="application" />
+-    <orderEntry type="library" scope="PROVIDED" name="mustache (v0.99.8, ruby-2.5.3-p105) [gem]" level="application" />
+-    <orderEntry type="library" scope="PROVIDED" name="mustermann (v1.0.3, ruby-2.5.3-p105) [gem]" level="application" />
+-    <orderEntry type="library" scope="PROVIDED" name="nokogiri (v1.9.1, ruby-2.5.3-p105) [gem]" level="application" />
+-    <orderEntry type="library" scope="PROVIDED" name="parallel (v1.12.1, ruby-2.5.3-p105) [gem]" level="application" />
+-    <orderEntry type="library" scope="PROVIDED" name="parser (v2.5.3.0, ruby-2.5.3-p105) [gem]" level="application" />
+-    <orderEntry type="library" scope="PROVIDED" name="power_assert (v1.1.3, ruby-2.5.3-p105) [gem]" level="application" />
+-    <orderEntry type="library" scope="PROVIDED" name="powerpack (v0.1.2, ruby-2.5.3-p105) [gem]" level="application" />
+-    <orderEntry type="library" scope="PROVIDED" name="rack (v2.0.6, ruby-2.5.3-p105) [gem]" level="application" />
+-    <orderEntry type="library" scope="PROVIDED" name="rack-protection (v2.0.5, ruby-2.5.3-p105) [gem]" level="application" />
+-    <orderEntry type="library" scope="PROVIDED" name="rainbow (v3.0.0, ruby-2.5.3-p105) [gem]" level="application" />
+-    <orderEntry type="library" scope="PROVIDED" name="rake (v12.3.2, ruby-2.5.3-p105) [gem]" level="application" />
+-    <orderEntry type="library" scope="PROVIDED" name="rdiscount (v2.2.0.1, ruby-2.5.3-p105) [gem]" level="application" />
+-    <orderEntry type="library" scope="PROVIDED" name="rubocop (v0.61.1, ruby-2.5.3-p105) [gem]" level="application" />
+-    <orderEntry type="library" scope="PROVIDED" name="ruby-progressbar (v1.10.0, ruby-2.5.3-p105) [gem]" level="application" />
+-    <orderEntry type="library" scope="PROVIDED" name="sinatra (v2.0.5, ruby-2.5.3-p105) [gem]" level="application" />
+-    <orderEntry type="library" scope="PROVIDED" name="test-unit (v3.2.9, ruby-2.5.3-p105) [gem]" level="application" />
+-    <orderEntry type="library" scope="PROVIDED" name="tilt (v2.0.9, ruby-2.5.3-p105) [gem]" level="application" />
+-    <orderEntry type="library" scope="PROVIDED" name="unicode-display_width (v1.4.1, ruby-2.5.3-p105) [gem]" level="application" />
++    <orderEntry type="library" scope="PROVIDED" name="ast (v2.4.0, ruby-2.3.7-p456) [gem]" level="application" />
++    <orderEntry type="library" scope="PROVIDED" name="bundler (v1.16.2, ruby-2.3.7-p456) [gem]" level="application" />
++    <orderEntry type="library" scope="PROVIDED" name="parallel (v1.12.1, ruby-2.3.7-p456) [gem]" level="application" />
++    <orderEntry type="library" scope="PROVIDED" name="rainbow (v3.0.0, ruby-2.3.7-p456) [gem]" level="application" />
+   </component>
+ </module>
+\ No newline at end of file
+diff --git a/lib/ronn/roff.rb b/lib/ronn/roff.rb
+index f008f67..7c56d2c 100644
+--- a/lib/ronn/roff.rb
++++ b/lib/ronn/roff.rb
+@@ -162,7 +162,7 @@ def block_filter(node)
+         when 'li'
+           case node.parent.name
+           when 'ol'
+-            macro 'IP', %W["#{node.position + 1}." 4]
++            macro 'IP', %W["#{node.parent.children.index(node) + 1}." 4]
+           when 'ul'
+             macro 'IP', ['"\\[ci]"', '4']
+           else
+diff --git a/test/ordered_list.html b/test/ordered_list.html
+new file mode 100644
+index 0000000..0824d84
+--- /dev/null
++++ b/test/ordered_list.html
+@@ -0,0 +1,30 @@
++<div class='mp'>
++
++<h1 id="Ordered-Lists">Ordered Lists</h1>
++<h2 id="Simple-ordered-lists">Simple ordered lists</h2>
++
++<h3 id="One-item-list">One-item list</h3>
++
++<ol>
++<li>Hello, world!</li>
++</ol>
++
++
++<h3 id="Three-item-list">Three-item list</h3>
++
++<ol>
++<li>Hello, world!</li>
++<li>Item 2</li>
++<li>Item 3</li>
++</ol>
++
++
++<h3 id="Four-item-list-with-all-1s">Four-item list with all 1s</h3>
++
++<ol>
++<li>Item 1</li>
++<li>Item 2</li>
++<li>Item 3</li>
++<li>Item 4</li>
++</ol>
++</div>
+diff --git a/test/ordered_list.roff b/test/ordered_list.roff
+new file mode 100644
+index 0000000..46cd54f
+--- /dev/null
++++ b/test/ordered_list.roff
+@@ -0,0 +1,25 @@
++.TH "ORDERED_LIST" "" "January 1979" "" ""
++.SH "Simple ordered lists"
++.SS "One\-item list"
++.IP "1." 4
++Hello, world!
++.IP "" 0
++.SS "Three\-item list"
++.IP "1." 4
++Hello, world!
++.IP "2." 4
++Item 2
++.IP "3." 4
++Item 3
++.IP "" 0
++.SS "Four\-item list with all 1s"
++.IP "1." 4
++Item 1
++.IP "2." 4
++Item 2
++.IP "3." 4
++Item 3
++.IP "4." 4
++Item 4
++.IP "" 0
++
+diff --git a/test/ordered_list.ronn b/test/ordered_list.ronn
+new file mode 100644
+index 0000000..752127a
+--- /dev/null
++++ b/test/ordered_list.ronn
+@@ -0,0 +1,21 @@
++Ordered Lists
++=============
++
++## Simple ordered lists
++
++### One-item list
++
++1. Hello, world!
++
++### Three-item list
++
++1. Hello, world!
++2. Item 2
++3. Item 3
++
++### Four-item list with all 1s
++
++1. Item 1
++1. Item 2
++1. Item 3
++1. Item 4
