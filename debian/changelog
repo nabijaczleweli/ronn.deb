@@ -1,3 +1,11 @@
+ruby-ronn (0.8.0-2) unstable; urgency=medium
+
+  * Team upload.
+  * Fix issue with ordered lists (Closes: #921637)
+  * Fix url hyphenation issue
+
+ -- Stephen Gelman <ssgelm@debian.org>  Sat, 23 Feb 2019 17:43:39 -0600
+
 ruby-ronn (0.8.0-1) unstable; urgency=medium
 
   * Team upload
