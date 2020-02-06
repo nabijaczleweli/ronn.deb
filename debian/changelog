@@ -1,6 +1,11 @@
-ruby-ronn (0.8.0-3) UNRELEASED; urgency=medium
+ruby-ronn (0.8.0-3) unstable; urgency=medium
 
+  [ Utkarsh Gupta ]
   * Add salsa-ci.yml
+
+  [ Cédric Boutillier ]
+  * Add patch to allow running ronn binary with current ruby version used in
+    tests
 
  -- Utkarsh Gupta <guptautkarsh2102@gmail.com>  Tue, 13 Aug 2019 07:15:52 +0530
 
