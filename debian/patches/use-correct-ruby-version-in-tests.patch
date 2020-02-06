@@ -1,0 +1,73 @@
+Description: use the version of ruby currently used in tests to call ronn
+ instead of the default version
+Author: Cédric Boutillier <boutil@debian.org>
+Last-Update: 2020-02-06
+
+--- a/test/test_ronn.rb
++++ b/test/test_ronn.rb
+@@ -15,7 +15,7 @@
+   require 'ronn'
+ 
+   test 'takes ronn text on stdin and produces roff on stdout' do
+-    output = `echo '# hello(1) -- hello world' | ronn --date=2009-11-23`
++    output = `echo '# hello(1) -- hello world' | #{RbConfig.ruby} -S ronn --date=2009-11-23`
+     lines = output.split("\n")
+     assert_equal 5, lines.size
+     assert_equal %(.\\" generated with Ronn-NG/v#{Ronn.version}), lines.shift
+@@ -45,7 +45,7 @@
+   end
+ 
+   test 'produces html instead of roff with the --html argument' do
+-    output = `echo '# hello(1) -- hello world' | ronn --html`
++    output = `echo '# hello(1) -- hello world' | #{RbConfig.ruby} -S ronn --html`
+     output = canonicalize(output)
+     assert_match(/<h2 id='NAME'>NAME<\/h2>/, output)
+     advertising = "<meta name='generator' content='Ronn-NG/v" + Ronn.version +
+@@ -54,7 +54,7 @@
+   end
+ 
+   test 'produces html fragment with the --fragment argument' do
+-    output = `echo '# hello(1) -- hello world' | ronn --fragment`
++    output = `echo '# hello(1) -- hello world' | #{RbConfig.ruby} -S ronn --fragment`
+     assert_equal [
+       "<div class='mp'>",
+       "<h2 id='NAME'>NAME</h2>",
+@@ -65,17 +65,17 @@
+   end
+ 
+   test 'abides by the RONN_MANUAL environment variable' do
+-    output = `echo '# hello(1) -- hello world' | RONN_MANUAL='Some Manual' ronn --html`
++    output = `echo '# hello(1) -- hello world' | RONN_MANUAL='Some Manual' #{RbConfig.ruby} -S ronn --html`
+     assert_match(/Some Manual/, output)
+   end
+ 
+   test 'abides by the RONN_DATE environment variable' do
+-    output = `echo '# hello(1) -- hello world' | RONN_DATE=1979-01-01 ronn --html`
++    output = `echo '# hello(1) -- hello world' | RONN_DATE=1979-01-01 #{RbConfig.ruby} -S ronn --html`
+     assert_match(/January 1979/, output)
+   end
+ 
+   test 'abides by the RONN_ORGANIZATION environment variable' do
+-    output = `echo '# hello(1) -- hello world' | RONN_ORGANIZATION='GitHub' ronn --html`
++    output = `echo '# hello(1) -- hello world' | RONN_ORGANIZATION='GitHub' #{RbConfig.ruby} -S ronn --html`
+     assert_match(/GitHub/, output)
+   end
+ 
+@@ -86,7 +86,7 @@
+ 
+     wrong = dest + '.wrong'
+     test File.basename(source, '.ronn') + ' HTML' do
+-      output = `ronn --pipe --html --fragment #{source}`
++      output = `#{RbConfig.ruby} -S ronn --pipe --html --fragment #{source}`
+       expected = begin
+                    File.read(dest)
+                  rescue IOError
+@@ -107,7 +107,7 @@
+ 
+     wrong = dest + '.wrong'
+     test File.basename(source, '.ronn') + ' roff' do
+-      output = `ronn --pipe --roff --date=1979-01-01 #{source}`
++      output = `#{RbConfig.ruby} -S ronn --pipe --roff --date=1979-01-01 #{source}`
+                .split("\n", 3).last # remove ronn version comments
+       expected = begin
+                    File.read(dest)
