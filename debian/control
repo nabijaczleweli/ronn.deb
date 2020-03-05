@@ -10,7 +10,7 @@ Build-Depends: debhelper (>= 11~),
                ruby-json,
                ruby-nokogiri (>= 1.9.0),
                ruby-mustache (>= 0.7.0),
-               ruby-kramdown,
+               ruby-kramdown (>= 1.17.0),
                ruby-test-unit
 Standards-Version: 4.5.0
 Homepage: https://github.com/apjanke/ronn-ng
@@ -26,7 +26,7 @@ Depends: ruby | ruby-interpreter,
          groff,
          ruby-nokogiri (>= 1.9.0),
          ruby-mustache (>= 0.7.0),
-         ruby-rdiscount (>= 2.0.7),
+         ruby-kramdown (>= 1.17.0),
          ${misc:Depends}
 Description: library to build manuals from Markdown
  Ronn builds manuals. It converts simple, human readable textfiles to roff for
