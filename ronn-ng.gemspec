@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name = 'ronn-ng'
-  s.version = '0.8.0'
-  s.date = '2018-12-25'
+  s.version = '0.9.0'
+  s.date = '2019-12-21'
 
   s.summary     = 'Builds man pages from Markdown'
   s.description = 'Ronn-NG builds manuals in HTML and Unix man page format from Markdown.'
@@ -86,6 +86,9 @@ Gem::Specification.new do |s|
     test/nested_list_with_code.html
     test/nested_list_with_code.roff
     test/nested_list_with_code.ronn
+    test/ordered_list.html
+    test/ordered_list.roff
+    test/ordered_list.ronn
     test/page.with.periods.in.name.5.ronn
     test/pre_block_with_quotes.roff
     test/pre_block_with_quotes.ronn
@@ -100,6 +103,7 @@ Gem::Specification.new do |s|
     test/titleless_document.ronn
     test/underline_spacing_test.roff
     test/underline_spacing_test.ronn
+    test/url_formatting.ronn
   ]
   # = MANIFEST =
 
@@ -107,9 +111,9 @@ Gem::Specification.new do |s|
   s.test_files = s.files.select { |path| path =~ /^test\/.*_test.rb/ }
 
   s.extra_rdoc_files = %w[LICENSE.txt AUTHORS]
+  s.add_dependency 'kramdown',    '~> 2.1'
   s.add_dependency 'mustache',    '~> 0.7', '>= 0.7.0'
   s.add_dependency 'nokogiri',    '~> 1.9', '>= 1.9.0'
-  s.add_dependency 'rdiscount',   '~> 2.0', '>= 2.0.7'
   s.add_development_dependency 'rack',      '~> 2.0',  '>= 2.0.6'
   s.add_development_dependency 'rake',      '~> 12.3', '>= 12.3.0'
   s.add_development_dependency 'rubocop',   '~> 0.60', '>= 0.57.1'
@@ -118,5 +122,4 @@ Gem::Specification.new do |s|
 
   s.rdoc_options = ['--line-numbers', '--inline-source', '--title', 'Ronn']
   s.require_paths = %w[lib]
-  s.rubygems_version = '1.1.1'
 end

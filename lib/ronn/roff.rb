@@ -36,7 +36,11 @@ module Ronn
       comment "generated with Ronn-NG/v#{Ronn.version}"
       comment "http://github.com/apjanke/ronn-ng/tree/#{Ronn.revision}"
       return if name.nil?
-      macro 'TH', %("#{escape(name.upcase)}" "#{section}" "#{date.strftime('%B %Y')}" "#{version}" "#{manual}")
+      if manual
+        macro 'TH', %("#{escape(name.upcase)}" "#{section}" "#{date.strftime('%B %Y')}" "#{version}" "#{manual}")
+      else
+        macro 'TH', %("#{escape(name.upcase)}" "#{section}" "#{date.strftime('%B %Y')}" "#{version}")
+      end
     end
 
     def remove_extraneous_elements!(doc)
@@ -162,7 +166,7 @@ module Ronn
         when 'li'
           case node.parent.name
           when 'ol'
-            macro 'IP', %W["#{node.position + 1}." 4]
+            macro 'IP', %W["#{node.parent.children.index(node) + 1}." 4]
           when 'ul'
             macro 'IP', ['"\\[ci]"', '4']
           else
@@ -277,13 +281,13 @@ module Ronn
             inline_filter(node.children)
           elsif node.has_attribute?('data-bare-link')
             write '\fI'
-            inline_filter(node.children)
+            write '\%' + escape(node.attributes['href'].content)
             write '\fR'
           else
             inline_filter(node.children)
             write ' '
             write '\fI'
-            write escape(node.attributes['href'].content)
+            write '\%' + escape(node.attributes['href'].content)
             write '\fR'
           end
 
@@ -351,7 +355,7 @@ module Ronn
     def write(text)
       return if text.nil? || text.empty?
       # lines cannot start with a '.'. insert zero-width character before.
-      text = text.gsub(/\n\\\./s, "\n\\\\&\\.")
+      text = text.gsub(/\n\\\./, "\n\\\\&\\.")
       buf_ends_in_newline = @buf.last && @buf.last[-1] == "\n"
       @buf << '\&' if text[0, 2] == '\.' && buf_ends_in_newline
       @buf << text
