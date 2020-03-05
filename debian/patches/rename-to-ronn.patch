@@ -10,7 +10,7 @@ to provide a drop-in replacement for unmaintained ronn gem
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/ronn-ng.gemspec b/ronn-ng.gemspec
-index 899de64..67bc97d 100644
+index d682c85..f01d60d 100644
 --- a/ronn-ng.gemspec
 +++ b/ronn-ng.gemspec
 @@ -1,5 +1,5 @@
