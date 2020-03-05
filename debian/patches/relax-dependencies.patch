@@ -1,22 +1,27 @@
-Description: Relax gem dependencies
-  as Debian unstable has already newer version of them...
-Author: Cédric Boutillier <boutil@debian.org>
+From: =?utf-8?q?C=C3=A9dric_Boutillier?= <boutil@debian.org>
+Date: Thu, 5 Mar 2020 13:40:48 +0000
+Subject: Relax gem dependencies
+
 Last-Update: 2019-02-06
 Forwarded: not-needed
 
+ as Debian unstable has already newer version of them...
+---
+ ronn-ng.gemspec | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/ronn-ng.gemspec b/ronn-ng.gemspec
+index 4e81b7d..899de64 100644
 --- a/ronn-ng.gemspec
 +++ b/ronn-ng.gemspec
-@@ -107,9 +107,9 @@
-   s.test_files = s.files.select { |path| path =~ /^test\/.*_test.rb/ }
+@@ -112,8 +112,8 @@ Gem::Specification.new do |s|
  
    s.extra_rdoc_files = %w[LICENSE.txt AUTHORS]
+   s.add_dependency 'kramdown',    '~> 2.1'
 -  s.add_dependency 'mustache',    '~> 0.7', '>= 0.7.0'
 -  s.add_dependency 'nokogiri',    '~> 1.9', '>= 1.9.0'
--  s.add_dependency 'rdiscount',   '~> 2.0', '>= 2.0.7'
 +  s.add_dependency 'mustache',    '>= 0.7.0'
 +  s.add_dependency 'nokogiri',    '>= 1.9.0'
-+  s.add_dependency 'rdiscount',   '>= 2.0.7'
    s.add_development_dependency 'rack',      '~> 2.0',  '>= 2.0.6'
    s.add_development_dependency 'rake',      '~> 12.3', '>= 12.3.0'
    s.add_development_dependency 'rubocop',   '~> 0.60', '>= 0.57.1'

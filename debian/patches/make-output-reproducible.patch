@@ -1,4 +1,3 @@
-From 7361d1e535cf4c07e4a9fa352e27e76e3cfaca58 Mon Sep 17 00:00:00 2001
 From: Chris Lamb <chris@chris-lamb.co.uk>
 Date: Sat, 2 Jul 2016 21:11:41 +0200
 Subject: [PATCH] Make the output reproducible.
@@ -10,9 +9,15 @@ environment variable before using the current time.
 
 Signed-off-by: Chris Lamb <chris@chris-lamb.co.uk>
 Signed-off-by: Antonio Terceiro <terceiro@debian.org>
+---
+ lib/ronn/document.rb | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/lib/ronn/document.rb b/lib/ronn/document.rb
+index e0d1721..21c5a37 100644
 --- a/lib/ronn/document.rb
 +++ b/lib/ronn/document.rb
-@@ -181,6 +181,8 @@
+@@ -181,6 +181,8 @@ module Ronn
      def date
        return @date if @date
  

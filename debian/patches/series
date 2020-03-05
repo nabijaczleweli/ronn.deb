@@ -1,6 +1,4 @@
 make-output-reproducible.patch
 relax-dependencies.patch
 rename-to-ronn.patch
-fix-ordered-lists.patch
-fix-url-hyphenation.patch
 use-correct-ruby-version-in-tests.patch

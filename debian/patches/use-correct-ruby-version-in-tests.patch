@@ -1,11 +1,19 @@
-Description: use the version of ruby currently used in tests to call ronn
- instead of the default version
-Author: Cédric Boutillier <boutil@debian.org>
+From: =?utf-8?q?C=C3=A9dric_Boutillier?= <boutil@debian.org>
+Date: Thu, 5 Mar 2020 13:40:48 +0000
+Subject: use the version of ruby currently used in tests to call ronn
+
 Last-Update: 2020-02-06
 
+instead of the default version
+---
+ test/test_ronn.rb | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/test/test_ronn.rb b/test/test_ronn.rb
+index f1f0e32..0b9a5fe 100644
 --- a/test/test_ronn.rb
 +++ b/test/test_ronn.rb
-@@ -15,7 +15,7 @@
+@@ -15,7 +15,7 @@ class RonnTest < Test::Unit::TestCase
    require 'ronn'
  
    test 'takes ronn text on stdin and produces roff on stdout' do
@@ -14,7 +22,7 @@ Last-Update: 2020-02-06
      lines = output.split("\n")
      assert_equal 5, lines.size
      assert_equal %(.\\" generated with Ronn-NG/v#{Ronn.version}), lines.shift
-@@ -45,7 +45,7 @@
+@@ -45,7 +45,7 @@ class RonnTest < Test::Unit::TestCase
    end
  
    test 'produces html instead of roff with the --html argument' do
@@ -23,7 +31,7 @@ Last-Update: 2020-02-06
      output = canonicalize(output)
      assert_match(/<h2 id='NAME'>NAME<\/h2>/, output)
      advertising = "<meta name='generator' content='Ronn-NG/v" + Ronn.version +
-@@ -54,7 +54,7 @@
+@@ -54,7 +54,7 @@ class RonnTest < Test::Unit::TestCase
    end
  
    test 'produces html fragment with the --fragment argument' do
@@ -32,7 +40,7 @@ Last-Update: 2020-02-06
      assert_equal [
        "<div class='mp'>",
        "<h2 id='NAME'>NAME</h2>",
-@@ -65,17 +65,17 @@
+@@ -65,17 +65,17 @@ class RonnTest < Test::Unit::TestCase
    end
  
    test 'abides by the RONN_MANUAL environment variable' do
@@ -53,7 +61,7 @@ Last-Update: 2020-02-06
      assert_match(/GitHub/, output)
    end
  
-@@ -86,7 +86,7 @@
+@@ -86,7 +86,7 @@ class RonnTest < Test::Unit::TestCase
  
      wrong = dest + '.wrong'
      test File.basename(source, '.ronn') + ' HTML' do
@@ -62,7 +70,7 @@ Last-Update: 2020-02-06
        expected = begin
                     File.read(dest)
                   rescue IOError
-@@ -107,7 +107,7 @@
+@@ -107,7 +107,7 @@ class RonnTest < Test::Unit::TestCase
  
      wrong = dest + '.wrong'
      test File.basename(source, '.ronn') + ' roff' do
