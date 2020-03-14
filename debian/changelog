@@ -1,3 +1,9 @@
+ruby-ronn (0.8.0-4) UNRELEASED; urgency=medium
+
+  * Trim trailing whitespace.
+
+ -- Debian Janitor <janitor@jelmer.uk>  Sat, 14 Mar 2020 17:05:49 +0000
+
 ruby-ronn (0.8.0-3) unstable; urgency=medium
 
   * Team upload
@@ -40,7 +46,7 @@ ruby-ronn (0.8.0-1) unstable; urgency=medium
   * Acknowledge 0.7.3-5.1 NMU. Thanks Helmut
 
  -- Cédric Boutillier <boutil@debian.org>  Wed, 06 Feb 2019 23:53:40 +0100
-               
+
 ruby-ronn (0.7.3-5.1) unstable; urgency=medium
 
   * Non-maintainer upload.
