@@ -2,7 +2,6 @@
 
 export GEM2DEB_TEST_RUNNER = --check-dependencies
 export DH_RUBY_USE_DH_AUTO_INSTALL_DESTDIR=yes
-export DH_RUBY = --gem-install
 
 %:
 	dh $@ --buildsystem=ruby --with ruby
