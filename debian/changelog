@@ -1,5 +1,7 @@
 ruby-ronn (0.9.0-1) UNRELEASED; urgency=medium
 
+  * Team upload
+
   [ Debian Janitor ]
   * Trim trailing whitespace.
   * Bump debhelper from old 11 to 12.
@@ -7,8 +9,12 @@ ruby-ronn (0.9.0-1) UNRELEASED; urgency=medium
   * Set upstream metadata fields: Bug-Database, Bug-Submit, Repository,
     Repository-Browse.
 
-  [ Cédric Boutillier ]
-  * New upstream version 0.9.0
+  [ nabijaczleweli <nabijaczleweli@gmail.com>]
+  * New upstream version 0.9.0 (Closes: #953198)
+    + fix Incompatible encoding regexp match when generating
+      utf-8 roff (Closes: #928627)
+  * Rebase patches, dropping ones marked already upstream
+  * Spec move to kramdown
 
  -- Cédric Boutillier <boutil@debian.org>  Wed, 08 Apr 2020 11:20:27 +0200
 
