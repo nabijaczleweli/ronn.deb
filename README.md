@@ -1,6 +1,6 @@
 # Ronn-NG
 
-Ronn-NG is a new, currently-maintained fork of the defunct [original Ronn 
+Ronn-NG is a new, currently-maintained fork of the defunct [original Ronn
 project](https://github.com/rtomayko/ronn).
 
 Ronn builds manuals. It converts simple, human readable textfiles to roff for
@@ -35,7 +35,13 @@ brew tap apjanke/ronn-ng
 brew install ronn-ng
 ```
 
-See [INSTALLING.md][] for details on other systems and installation methods.
+Install with `gem` anywhere that supports it:
+
+```
+gem install ronn-ng
+```
+
+See [INSTALLING.md](INSTALLING.md) for details on other systems and installation methods.
 
 ## Examples
 
@@ -121,8 +127,7 @@ MIT License.
 
 Ronn is Copyright (C) 2010 [Ryan Tomayko](http://tomayko.com/about).
 
-New Ronn-NG material is Copyright (c) 2018 [Andrew Janke](https://apjanke.net)
-and other contributors.
+New Ronn-NG material is Copyright (C) 2018, 2019 [Andrew Janke](https://apjanke.net).
 
 See the file LICENSE.txt for information of licensing and distribution.
 
