@@ -11,7 +11,7 @@ task :environment do
   $LOAD_PATH.unshift ROOTDIR unless $LOAD_PATH.include?(ROOTDIR)
   $LOAD_PATH.unshift LIBDIR unless $LOAD_PATH.include?(LIBDIR)
   require_library 'nokogiri'
-  require_library 'rdiscount'
+  require_library 'kramdown'
   ENV['RUBYLIB'] = $LOAD_PATH.join(':')
   ENV['PATH'] = "#{BINDIR}:#{ENV['PATH']}"
 end
@@ -135,9 +135,9 @@ end
 
 def require_library(name)
   require name
-rescue LoadError => boom
+rescue LoadError => e
   unless defined?(Gem)
-    warn "warn: #{boom}. trying again with rubygems."
+    warn "warn: #{e}. trying again with rubygems."
     require 'rubygems'
     retry
   end

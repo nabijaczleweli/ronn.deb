@@ -1,7 +1,7 @@
 require 'time'
 require 'cgi'
 require 'nokogiri'
-require 'rdiscount'
+require 'kramdown'
 require 'ronn/index'
 require 'ronn/roff'
 require 'ronn/template'
@@ -20,7 +20,7 @@ module Ronn
     include Ronn::Utils
 
     # Path to the Ronn document. This may be '-' or nil when the Ronn::Document
-    # object is created with a stream.
+    # object is created with a stream, in which case stdin will be read.
     attr_reader :path
 
     # The raw input data, read from path or stream and unmodified.
@@ -58,7 +58,7 @@ module Ronn
     # Array of style modules to apply to the document.
     attr_reader :styles
 
-    # Output directory to write files to
+    # Output directory to write files to.
     attr_accessor :outdir
 
     # Create a Ronn::Document given a path or with the data returned by
@@ -118,7 +118,7 @@ module Ronn
       return unless @basename
 
       parts = @basename.split('.')
-      parts.pop if parts.last.casecmp('ronn').zero?
+      parts.pop if parts.length > 1 && parts.last =~ /^\w+$/
       parts.pop if parts.last =~ /^\d+$/
       parts.join('.')
     end
@@ -205,7 +205,7 @@ module Ronn
     # tuple of the form: [name, section, description], where missing information
     # is represented by nil and any element may be missing.
     def sniff
-      html = Markdown.new(data[0, 512], :no_superscript).to_html
+      html = Kramdown::Document.new(data[0, 512], auto_ids: false, smart_quotes: ['apos', 'apos', 'quot', 'quot'], typographic_symbols: { hellip: '...', ndash: '--', mdash: '--' }).to_html
       heading, html = html.split("</h1>\n", 2)
       return [nil, nil, nil] if html.nil?
 
@@ -289,7 +289,7 @@ module Ronn
       to_h.to_yaml
     end
 
-    def to_json
+    def to_json(*_args)
       require 'json'
       to_h.merge('date' => date.iso8601).to_json
     end
@@ -307,7 +307,7 @@ module Ronn
     end
 
     def input_html
-      @input_html ||= strip_heading(Markdown.new(markdown, :no_superscript).to_html)
+      @input_html ||= strip_heading(Kramdown::Document.new(markdown, auto_ids: false, smart_quotes: ['apos', 'apos', 'quot', 'quot'], typographic_symbols: { hellip: '...', ndash: '--', mdash: '--' }).to_html)
     end
 
     def strip_heading(html)
@@ -395,12 +395,12 @@ module Ronn
       # process all unordered lists depth-first
       @html.search('ul').to_a.reverse_each do |ul|
         items = ul.search('li')
-        next if items.any? { |item| item.inner_text.split("\n", 2).first !~ /:$/ }
+        next if items.any? { |item| item.inner_text.strip.split("\n", 2).first !~ /:$/ }
 
         dl = Nokogiri::XML::Node.new 'dl', html
         items.each do |item|
           # This processing is specific to how Markdown generates definition lists
-          term, definition = item.inner_html.split(":\n", 2)
+          term, definition = item.inner_html.strip.split(":\n", 2)
           term = term.sub(/^<p>/, '')
 
           dt = Nokogiri::XML::Node.new 'dt', html

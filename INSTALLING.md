@@ -10,7 +10,7 @@ only supported on macOS, with [Homebrew](http://brew.sh). To install with `brew`
 
 ```
 brew tap apjanke/ronn-ng
-brew install --HEAD ronn-ng
+brew install ronn-ng
 ```
 
 ### From RubyGems
@@ -68,7 +68,7 @@ PATH=$(pwd)/ronn-ng/bin:$PATH
 The following gems are required for ronn-ng development:
  * nokogiri
  * mustache
- * rdiscount
+ * kramdown
  * rubocop
  * sinatra
  * rack
@@ -76,7 +76,7 @@ The following gems are required for ronn-ng development:
  * test-unit
 
 ```
-gem install nokogiri mustache rdiscount rubocop sinatra rack rake test-unit
+gem install nokogiri mustache kramdown rubocop sinatra rack rake test-unit
 ```
 
 Or install them with bundler using the project's gem definition:
@@ -97,4 +97,3 @@ curl -L http://github.com/rtomayko/ronn/downloads/0.6.6 | tar xvzf -
 cd rtomayko-r*
 ruby setup.rb
 ```
-
