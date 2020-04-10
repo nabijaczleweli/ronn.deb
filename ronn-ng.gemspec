@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name = 'ronn-ng'
-  s.version = '0.9.0'
-  s.date = '2019-12-21'
+  s.version = '0.9.1'
+  s.date = '2020-04-09'
 
   s.summary     = 'Builds man pages from Markdown'
   s.description = 'Ronn-NG builds manuals in HTML and Unix man page format from Markdown.'
@@ -103,7 +103,6 @@ Gem::Specification.new do |s|
     test/titleless_document.ronn
     test/underline_spacing_test.roff
     test/underline_spacing_test.ronn
-    test/url_formatting.ronn
   ]
   # = MANIFEST =
 

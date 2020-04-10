@@ -23,6 +23,9 @@ module Ronn
     # object is created with a stream, in which case stdin will be read.
     attr_reader :path
 
+    # Encoding that the Ronn document is in
+    attr_accessor :encoding
+
     # The raw input data, read from path or stream and unmodified.
     attr_reader :data
 
@@ -73,7 +76,7 @@ module Ronn
                   if ['-', nil].include?(f)
                     STDIN.read
                   else
-                    File.read(f)
+                    File.read(f, encoding: @encoding)
                   end
                 end
       @data = @reader.call(path)
